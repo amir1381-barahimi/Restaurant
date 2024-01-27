@@ -125,11 +125,11 @@ class Cart_food(models.Model):
         if self.cart.restaurant != self.food.restaurant:
             raise ValidationError("Cannot add food to cart from a different restaurant.")
 
-    def save(self, *args, **kwargs):
-            # If the cart is not set, create a new Cart and set its restaurant based on the food
-        if not self.cart_id:
-            cart = Cart.objects.create(restaurant=self.food.restaurant)
-            self.cart = cart
+    # def save(self, *args, **kwargs):
+    #         # If the cart is not set, create a new Cart and set its restaurant based on the food
+    #     if not self.cart_id:
+    #         cart = Cart.objects.create(restaurant=self.food.restaurant)
+    #         self.cart = cart
 
         
         super(Cart_food, self).save(*args, **kwargs)

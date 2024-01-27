@@ -27,6 +27,7 @@ urlpatterns = [
     path("users/<int:pk>",MyUserDetail.as_view(),name='MyUserDetail'),
     path("users/<int:pk>/foodFavorite",MyUserFoodLikeDetail.as_view(),name='MyUserFoodLikeDetail'),
     path("users/<int:pk>/restaurantFavorite",MyUserRestaurantLikeDetail.as_view(),name='MyUserFoodLikeDetail'),
+    # path("users/restaurantFavorite",MyUserRestaurantLikeDetail.as_view(),name='MyUserFoodLikeDetail'),
     path("users/foodFavorite/add",MyUserFoodLikeAdd.as_view(),name='MyUserFoodLikeAdd'),
     path("users/restaurantFavorite/add",MyUserRestaurantLikeAdd.as_view(),name='MyUserRestaurantLikeAdd'),
     path("users/<int:pk>/Address",AddressUserList.as_view(),name='UserAddressList'),

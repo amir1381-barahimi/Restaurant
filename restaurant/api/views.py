@@ -1,4 +1,6 @@
 import re
+from typing import List
+from rest_framework import permissions
 from rest_framework.generics import *
 from rest_framework import status
 from rest_framework.response import Response
@@ -20,83 +22,124 @@ from .serializers import *
 class RestaurantListAll(ListAPIView):
     queryset = Restaurant.objects.all()
     serializer_class = RestaurantSerializer
+    permission_classes = [permissions.AllowAny]
     
 class RestaurantNearest(ListAPIView):
     queryset = Restaurant.objects.all().order_by('distance_to_origin')
     serializer_class = RestaurantSerializer
+    permission_classes = [permissions.AllowAny]
+    
 
 class RestaurantFreeDelivery(ListAPIView):
     queryset = Restaurant.objects.filter(delivery_cost=0)
     serializer_class = RestaurantSerializer
+    permission_classes = [permissions.AllowAny]
+    
     
 class RestaurantPopularList(ListAPIView):
     queryset = Restaurant.objects.all().order_by('-rate')
     serializer_class = RestaurantSerializer
+    permission_classes = [permissions.AllowAny]
+    
 
     
 class FoodListAll(ListAPIView):
     queryset = Food.objects.all()
     serializer_class = FoodSerializer
+    permission_classes = [permissions.AllowAny]
+    
     
 class FoodNameDetail(RetrieveUpdateDestroyAPIView):
     queryset = Food.objects.all()
     serializer_class = FoodSerializer
     lookup_field = "name"
+    permission_classes = [permissions.AllowAny]
+    
 
 
 class FoodPKDetail(RetrieveUpdateDestroyAPIView):
     queryset = Food.objects.all()
     serializer_class = FoodSerializer
+    permission_classes = [permissions.AllowAny]
+    
     
 class FoodPopularList(ListAPIView):
     queryset = Food.objects.all().order_by('-rate')
     serializer_class = FoodSerializer
+    permission_classes = [permissions.AllowAny]
+    
 
 
 class FoodfastFoodList(ListAPIView):
     queryset = Food.objects.filter(category='Fa')
     serializer_class = FoodSerializer
+    permission_classes = [permissions.AllowAny]
+    
 
 
 class FoodTraditionalFoodList(ListAPIView):
     queryset = Food.objects.filter(category='TR')
     serializer_class = FoodSerializer
+    permission_classes = [permissions.AllowAny]
+    
 
 class FoodForeignFoodList(ListAPIView):
     queryset = Food.objects.filter(category='FO')
     serializer_class = FoodSerializer
+    permission_classes = [permissions.AllowAny]
+    
     
     
 class MyUserListAll(ListAPIView):
     queryset = MyUser.objects.all()
     serializer_class = MyUserSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    
 
 
 class MyUserDetail(RetrieveUpdateDestroyAPIView):
     queryset = MyUser.objects.all()
     serializer_class = MyUserSerializer
     
+    
 
 
-class MyUserFoodLikeDetail(RetrieveUpdateDestroyAPIView):
+class MyUserFoodLikeDetail(ListAPIView):
     # queryset = MyUser_foodLike.objects.all()
-    serializer_class = MyUserFavoriteFoodSerializer
+    # serializer_class = MyUserFavoriteFoodSerializer
+    serializer_class = FoodSerializer
+
     def get_queryset(self):
         user_id = self.kwargs['pk']
-        return MyUser_foodLike.objects.filter(user=user_id)
+        
+        food = MyUser_foodLike.objects.filter(user=user_id).values_list('food_id', flat=True)
+        # print(list(food))
+        return Food.objects.filter(id__in = food)
+        
+        
+        # return MyUser_foodLike.objects.filter(user=user_id)
     
 
-class MyUserRestaurantLikeDetail(RetrieveUpdateDestroyAPIView):
+class MyUserRestaurantLikeDetail(ListAPIView):
     # queryset = MyUser.objects.all()
-    serializer_class = MyUserFavoriteRestaurantSerializer
+    serializer_class = RestaurantSerializer
+    permission_classes = [permissions.IsAuthenticated]
     
     def get_queryset(self):
         user_id = self.kwargs['pk']
-        return MyUser_restaurantLike.objects.filter(user=user_id)
+        # user = self.request.user
+        # self.check_object_permissions(self.request, obj)
+        restaurant =  MyUser_restaurantLike.objects.filter(user=user_id).values_list('restaurant_id', flat=True)
+        return Restaurant.objects.filter(id__in = restaurant)
+        # return MyUser_restaurantLike.objects.filter(user=user_id)
     
 class MyUserRestaurantLikeAdd(CreateAPIView):
     queryset = MyUser_restaurantLike.objects.all()
     serializer_class = MyUserFavoriteRestaurantSerializer
+    
+    # def perform_create(self, serializer):
+    #     # Assign the current user to the "user" field before saving
+    #     serializer.save(user=self.request.user)
     
 
 class MyUserFoodLikeAdd(CreateAPIView):
